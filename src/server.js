@@ -32,14 +32,13 @@ app.get('/auth', function (req, res) {
 })
 
 app.post('/post', function(req, res) {
-  const dataExtension = "B0B5F4DA-CAB7-4C30-89CA-110A36B5F468"
+  const dataExtension = "Sales4sSubscribers-DE"
   const token = req.body.token; //"eyJhbGciOiJIUzI1NiIsImtpZCI6IjEiLCJ2ZXIiOiIxIiwidHlwIjoiSldUIn0.eyJhY2Nlc3NfdG9rZW4iOiI3QXhPakpKbUVvMnVxVnk0cEdCSTVKVEQiLCJjbGllbnRfaWQiOiJzZ3JiNXFtZzlseGR0eTJuaHBocWZoaXoiLCJlaWQiOjcyNzUyODMsInN0YWNrX2tleSI6IlM3IiwicGxhdGZvcm1fdmVyc2lvbiI6MiwiY2xpZW50X3R5cGUiOiJTZXJ2ZXJUb1NlcnZlciJ9.KnKFkzmVX38yDbw0l0OZQRixyCbtthrXRTt4g0WHzFA.poVoj6tmIWChUARoinGdvNGEnk5QqE5hdMwXL0k619qTGTSFoZoE05JZyGxD1VqALgmrSRaCc_02BxveTvEWZngp1HA8Fxo2f8q79-DiHZ5ylgE_jo7EEaU2T5l_JYWgQmHzGgHpQxbvdMpLxnwdVOl8bLfw19jqZMPLBsiAt1lFGrR_7gOdiFP";
   console.log(req.body)
   const bodyParameters = {
-    "items": [{
-      "Name": req.body.form.name,
-      "Email Address": "Testing@woot.lol"
-    }]
+    "items": [
+      req.body.user
+    ]
   };
   const config = {
     headers: { Authorization: `Bearer ${token}` }

@@ -1,15 +1,14 @@
 <template>
   <div>
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-form v-if="show">
         <h2 style="margin-bottom:20px">SIGN UP FORM</h2>
       <b-form-group
-        id="input-group-1"
         label="Email address:"
         label-for="input-1"
+        required
         description="We'll never share your email with anyone else."
       >
         <b-form-input
-          id="input-1"
           v-model="form.email"
           type="email"
           required
@@ -17,41 +16,44 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group id="input-group-2" label="User's Name:" label-for="input-2">
+      <b-form-group label="User's Name:" label-for="input-2">
         <b-form-input
-          id="input-2"
           v-model="form.name"
           required
           placeholder="Enter name"
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group id="input-group-3" label="Preferences:" label-for="input-3">
+      <b-form-group label="Preferences:" label-for="input-3">
         <b-form-select
-          id="input-3"
           v-model="form.preference"
           :options="preferences"
           required
         ></b-form-select>
       </b-form-group>
 
-      <b-form-group id="input-group-4">
-        <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
-          <b-form-checkbox value="me">Check me out</b-form-checkbox>
-          <b-form-checkbox value="that">Check that out</b-form-checkbox>
-        </b-form-checkbox-group>
+      <b-form-group label="Enter age:" label-for="input-2">
+        <b-form-input
+          v-model="form.age"
+          required
+          type="number"
+          placeholder="Enter age"
+        ></b-form-input>
       </b-form-group>
 
-      <b-form-file
-        v-model="picture"
-        :state="Boolean(picture)"
-        placeholder="Choose a picture for your profile..."
-        drop-placeholder="Drop picture here..."
-        ></b-form-file>
-    <div class="mt-3">Selected file: {{ picture ? picture.name : '' }}</div>
+      <b-form-group label="Image URL:" label-for="input-2">
+        <b-form-input
+          v-model="form.photo_url"
+          required
+          placeholder="Enter image url"
+        ></b-form-input>
+      </b-form-group>
 
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-form-group>
+        <b-form-checkbox v-model="form.opt_in">I accept .........</b-form-checkbox>
+      </b-form-group>
+
+      <b-button @click="onSubmit" variant="primary">Submit</b-button>
     </b-form>
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
@@ -60,16 +62,17 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+  import axios from 'axios'
   export default {
     data() {
       return {
         form: {
           email: '',
           name: '',
-          picture: 'user pic',
+          age: 25,
+          photo_url: null,
           preference: null,
-          checked: []
+          opt_in: false
         },
         preferences: [{ text: 'Select One', value: null }, 'Football', 'Movies', 'Travels'],
         show: true
@@ -77,31 +80,22 @@ import {mapGetters} from 'vuex'
     },
 
     methods: {
-      onSubmit(evt) {
-        evt.preventDefault()
-        //alert(JSON.stringify(this.form))
-        const user = {
-            name: this.name,
-            email: this.email,
-            picture: this.picture,
-            preference: this.preference
-        }
-        console.log('USER OBJ: ',user)
-        this.$store.dispatch('sendUser',
-        {
-            name: this.name,
-            email: this.email,
-            picture: this.picture,
-            preference: this.preference
-        }
-        )
+      onSubmit() {
+        const user = this.form
+        console.log(user)
+        const postUrl = "http://localhost:3000/post"
+        axios.post(postUrl, {
+          token: this.$store.getters.token, 
+          user
+        }, 
+        {contentType: "application/json"})
+        .then(console.log)
       },
-      onReset(evt) {
-        evt.preventDefault()
+      onReset() {
         this.form.email = ''
         this.form.name = ''
         this.form.preference = null
-        this.form.checked = []
+        this.form.opt_in = []
         this.show = false
         this.$nextTick(() => {
           this.show = true
