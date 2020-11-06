@@ -22,7 +22,7 @@ app.get('/auth', function (req, res) {
     "grant_type": "client_credentials",
     "client_id": process.env.VUE_APP_CLIENT_ID,
     "client_secret": process.env.VUE_APP_CLIENT_SECRET,
-    "scope": "data_extensions_write journeys_execute journeys_read journeys_write email_read email_write email_send saved_content_read saved_content_write",
+    "scope": "list_and_subscribers_read data_extensions_write journeys_execute journeys_read journeys_write email_read email_write email_send saved_content_read saved_content_write",
     "account_id": process.env.VUE_APP_ACCOUNT_ID
   }
 
@@ -32,21 +32,47 @@ app.get('/auth', function (req, res) {
 })
 
 app.post('/post', function(req, res) {
-  const dataExtension = "Sales4sSubscribers-DE"
-  const token = req.body.token; //"eyJhbGciOiJIUzI1NiIsImtpZCI6IjEiLCJ2ZXIiOiIxIiwidHlwIjoiSldUIn0.eyJhY2Nlc3NfdG9rZW4iOiI3QXhPakpKbUVvMnVxVnk0cEdCSTVKVEQiLCJjbGllbnRfaWQiOiJzZ3JiNXFtZzlseGR0eTJuaHBocWZoaXoiLCJlaWQiOjcyNzUyODMsInN0YWNrX2tleSI6IlM3IiwicGxhdGZvcm1fdmVyc2lvbiI6MiwiY2xpZW50X3R5cGUiOiJTZXJ2ZXJUb1NlcnZlciJ9.KnKFkzmVX38yDbw0l0OZQRixyCbtthrXRTt4g0WHzFA.poVoj6tmIWChUARoinGdvNGEnk5QqE5hdMwXL0k619qTGTSFoZoE05JZyGxD1VqALgmrSRaCc_02BxveTvEWZngp1HA8Fxo2f8q79-DiHZ5ylgE_jo7EEaU2T5l_JYWgQmHzGgHpQxbvdMpLxnwdVOl8bLfw19jqZMPLBsiAt1lFGrR_7gOdiFP";
-  console.log(req.body)
-  const bodyParameters = {
-    "items": [
-      req.body.user
-    ]
-  };
+  const token = req.body.token;
   const config = {
     headers: { Authorization: `Bearer ${token}` }
   }
-  axios.post(restUrl + `/data/v1/async/dataextensions/key:${dataExtension}/rows`, bodyParameters, config)
-    .then((res) => console.log(res.status))
-    .catch((res) => console.log(res.status))
+  const eventDefinitionKey = "APIEvent-26570a64-c26a-4e65-bf2c-d76f554e36db"
+  const journeyBody = {
+    "ContactKey": req.body.user.userID,
+    "EventDefinitionKey": eventDefinitionKey,
+    "Data": {
+        "age": req.body.user.age,
+        "preference": req.body.user.preference,
+        "imageurl": req.body.user.Imageurl,
+        "opt_in": req.body.user.opt_in,
+        "Email": req.body.user.email,
+        "Name": req.body.user.name,
+        "userid": req.body.user.userID
+    }
+  }
+  axios.post(restUrl + "/interaction/v1/events", journeyBody, config)
+    .then(res => console.log("Journey send status:", res.status))
+    .catch((res) => console.log(res))
   res.json();
 })
+
+// app.post('/update', function(req, res) {
+//   const dataExtension = "0B84CE02-535F-4427-A096-18DC67477A7B"
+//   const token = req.body.token; 
+//   console.log(req.body)
+//   req.body.user.userID = '111111111111'
+//   const bodyParameters = {
+//     "items": [{
+//       ...req.body.user
+//     }]
+//   };
+//   const config = {
+//     headers: { Authorization: `Bearer ${token}` }
+//   }
+//   axios.post(restUrl + `/data/v1/async/dataextensions/key:${dataExtension}/rows`, bodyParameters, config)
+//     .then((res) => console.log(res.status))
+//     .catch((res) => console.log(res.status))
+//   res.json();
+// })
  
 app.listen(3000)

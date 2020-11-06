@@ -43,7 +43,7 @@
 
       <b-form-group label="Image URL:" label-for="input-2">
         <b-form-input
-          v-model="form.photo_url"
+          v-model="form.Imageurl"
           required
           placeholder="Enter image url"
         ></b-form-input>
@@ -70,36 +70,25 @@
           email: '',
           name: '',
           age: 25,
-          photo_url: null,
+          Imageurl: null,
           preference: null,
-          opt_in: false
+          opt_in: false,
+          userID: Date.now().toString()
         },
-        preferences: [{ text: 'Select One', value: null }, 'Football', 'Movies', 'Travels'],
+        preferences: [{ text: 'Select One', value: null }, 'Sport', 'Business', 'Motorsport'],
         show: true
       }
     },
 
     methods: {
       onSubmit() {
-        const user = this.form
-        console.log(user)
         const postUrl = "http://localhost:3000/post"
         axios.post(postUrl, {
           token: this.$store.getters.token, 
-          user
+          user: this.form
         }, 
         {contentType: "application/json"})
         .then(console.log)
-      },
-      onReset() {
-        this.form.email = ''
-        this.form.name = ''
-        this.form.preference = null
-        this.form.opt_in = []
-        this.show = false
-        this.$nextTick(() => {
-          this.show = true
-        })
       }
     }
   }
