@@ -42,7 +42,7 @@
       </b-form-group>
 
       <b-form-group label="Image URL:" label-for="input-2">
-        <b-form-input
+        <b-form-input @change="checkImageForTags"
           v-model="form.Imageurl"
           required
           placeholder="Enter image url"
@@ -75,7 +75,7 @@
           opt_in: false,
           userID: Date.now().toString()
         },
-        preferences: [{ text: 'Select One', value: null }, 'Sport', 'Business', 'Motorsport'],
+        preferences: [{ text: 'Select One', value: null }, 'sport', 'business', 'motorsport'],
         show: true
       }
     },
@@ -89,6 +89,31 @@
         }, 
         {contentType: "application/json"})
         .then(console.log)
+      },
+      checkImageForTags() {
+        const imageCheckUrl = "http://localhost:3000/checkImage"
+        if(this.isURL(this.form.Imageurl)){
+          axios.post(imageCheckUrl, {
+            url: this.form.Imageurl
+          }, {
+            contentType: "application/json"
+          })
+          .then(words => {
+            const tags = words.data.result.tags
+            const filteredTags = tags.map(tag => tag.tag.en)
+            console.table(filteredTags) 
+            const result = filteredTags.find(tag => (tag == 'sport' || tag == 'business' || tag == 'motorsport'))
+            console.log(result)
+            if(result){
+              this.form.preference = result
+            }
+          })
+        }
+      },
+      isURL(str) {
+        var expression = /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi;
+        var regex = new RegExp(expression);
+        return str.match(regex) != null;
       }
     }
   }

@@ -1,6 +1,8 @@
 const express = require('express')
 const axios = require('axios')
 const app = express()
+const unirest = require("unirest");
+
 require('dotenv').config()
 
 app.use(express.json())
@@ -54,6 +56,27 @@ app.post('/post', function(req, res) {
     .then(res => console.log("Journey send status:", res.status))
     .catch((res) => console.log(res))
   res.json();
+})
+
+app.post('/checkImage', function(req, res) {
+  var request = unirest("GET", "https://api.imagga.com/v2/tags");
+  console.log(req.body)
+  request.query({
+    "image_url": req.body.url,
+    "version": "2"
+  });
+  
+  request.headers({
+    "accept": "application/json",
+    "authorization": "Basic YWNjXzI1OTAxZjg2NjJhMTlkNDpmZDM2MGU0MjM0MmM5Mzk4YmU5YjcxYjc5OGYwYjAxYg=="
+  });
+  
+  let results = ""
+  request.end(function (reqResponse) {
+    if (reqResponse.error) res.json();
+    results = reqResponse.body;
+    res.json(results)
+  });
 })
 
 // app.post('/update', function(req, res) {
